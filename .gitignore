@@ -1,0 +1,5 @@
+node_modules/
+dist/
+release/
+*.pem
+.DS_Store

@@ -1,0 +1,23 @@
+{
+  "name": "google-auth-chrome-ext",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Offline, encrypted TOTP authenticator Chrome extension",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "tsc --noEmit && vite build",
+    "test": "vitest run",
+    "zip": "node scripts/zip.mjs",
+    "release": "npm audit --omit=dev && npm test && npm run build && npm run zip"
+  },
+  "dependencies": {
+    "jsqr": "1.4.0"
+  },
+  "devDependencies": {
+    "@types/chrome": "0.3.5",
+    "typescript": "7.0.2",
+    "vite": "8.3.4",
+    "vitest": "5.0.5"
+  }
+}

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Private Authenticator · Manage</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body class="manage">
+  <main>
+    <h1>Private Authenticator</h1>
+
+    <section id="setup" class="card" hidden>
+      <h2>Create your vault</h2>
+      <p class="muted">Your accounts are encrypted with this password (PBKDF2 + AES-256-GCM) and never leave this browser.
+        <b>There is no recovery and no backup:</b> if you forget it, the codes are gone.</p>
+      <form id="setup-form" class="stack">
+        <input id="new-pw" type="password" placeholder="Master password (min 10 characters)" autocomplete="new-password" required />
+        <input id="new-pw2" type="password" placeholder="Confirm password" autocomplete="new-password" required />
+        <p id="pw-hint" class="muted small"></p>
+        <button class="primary" type="submit">Create vault</button>
+      </form>
+      <p id="setup-error" class="error" role="alert"></p>
+    </section>
+
+    <section id="locked" class="card" hidden>
+      <h2>Unlock</h2>
+      <form id="unlock-form" class="row">
+        <input id="password" type="password" placeholder="Master password" autocomplete="current-password" required />
+        <button class="primary" type="submit">Unlock</button>
+      </form>
+      <p id="unlock-error" class="error" role="alert"></p>
+    </section>
+
+    <div id="unlocked" hidden>
+      <section class="card">
+        <h2>Import accounts</h2>
+        <p class="muted">In Google Authenticator: <b>☰ → Transfer accounts → Export accounts</b>. Screenshot or photograph each QR code
+          and add them all here. Delete the images afterwards — they contain your secrets.</p>
+        <label class="drop" id="drop">
+          <input id="files" type="file" accept="image/*" multiple />
+          <span>Drop QR images here or <u>choose files</u></span>
+        </label>
+        <details>
+          <summary>Paste an otpauth:// or otpauth-migration:// link</summary>
+          <form id="uri-form" class="row">
+            <input id="uri" type="text" placeholder="otpauth://totp/…" autocomplete="off" spellcheck="false" />
+            <button type="submit">Add</button>
+          </form>
+        </details>
+        <details>
+          <summary>Enter a secret manually</summary>
+          <form id="manual-form" class="grid">
+            <input name="issuer" placeholder="Issuer (e.g. GitHub)" />
+            <input name="label" placeholder="Account (e.g. me@example.com)" required />
+            <input name="secret" placeholder="Secret key (base32)" required autocomplete="off" spellcheck="false" />
+            <select name="type"><option value="totp">Time-based (TOTP)</option><option value="hotp">Counter-based (HOTP)</option></select>
+            <select name="algorithm"><option>SHA1</option><option>SHA256</option><option>SHA512</option></select>
+            <select name="digits"><option>6</option><option>8</option></select>
+            <input name="period" type="number" min="1" value="30" title="Period (seconds)" />
+            <button type="submit">Add</button>
+          </form>
+        </details>
+        <p id="import-status" class="status" role="status"></p>
+
+        <div id="preview" hidden>
+          <h3>Review before saving</h3>
+          <ul id="preview-list" class="list"></ul>
+          <div class="row">
+            <button id="save-preview" class="primary">Save selected</button>
+            <button id="clear-preview">Discard</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Accounts <span id="count" class="muted"></span></h2>
+        <ul id="accounts" class="list"></ul>
+      </section>
+
+      <section class="card">
+        <h2>Security</h2>
+        <div class="row">
+          <label for="autolock">Auto-lock after</label>
+          <select id="autolock">
+            <option value="1">1 minute</option><option value="5">5 minutes</option><option value="15">15 minutes</option>
+            <option value="60">1 hour</option><option value="240">4 hours</option>
+          </select>
+          <span class="muted small">of inactivity. Always locks when Chrome closes.</span>
+        </div>
+        <details>
+          <summary>Change master password</summary>
+          <form id="change-pw-form" class="stack">
+            <input id="old-pw" type="password" placeholder="Current password" autocomplete="current-password" required />
+            <input id="chg-pw" type="password" placeholder="New password" autocomplete="new-password" required />
+            <input id="chg-pw2" type="password" placeholder="Confirm new password" autocomplete="new-password" required />
+            <button type="submit">Change password</button>
+          </form>
+        </details>
+        <p id="security-status" class="status" role="status"></p>
+        <button id="lock">Lock now</button>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="./manage.ts"></script>
+</body>
+</html>

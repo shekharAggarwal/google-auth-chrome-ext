@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Private Authenticator</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body class="popup">
+  <section id="setup" hidden>
+    <h1>Private Authenticator</h1>
+    <p class="muted">No vault yet. Set a master password and import your accounts.</p>
+    <button id="open-setup" class="primary">Get started</button>
+  </section>
+
+  <section id="locked" hidden>
+    <h1>Unlock</h1>
+    <form id="unlock-form">
+      <input id="password" type="password" placeholder="Master password" autocomplete="current-password" required autofocus />
+      <button class="primary" type="submit">Unlock</button>
+    </form>
+    <p id="unlock-error" class="error" role="alert"></p>
+  </section>
+
+  <section id="unlocked" hidden>
+    <header class="toolbar">
+      <input id="search" type="search" placeholder="Search" aria-label="Search accounts" />
+      <button id="scan" title="Scan a QR code shown in the current tab">Scan</button>
+      <button id="manage" title="Import and manage accounts">Manage</button>
+      <button id="lock" title="Lock now">Lock</button>
+    </header>
+    <p id="status" class="status" role="status"></p>
+    <ul id="codes" class="codes"></ul>
+    <p id="empty" class="muted" hidden>No accounts yet. Use <b>Manage</b> to import.</p>
+  </section>
+
+  <script type="module" src="./popup.ts"></script>
+</body>
+</html>
