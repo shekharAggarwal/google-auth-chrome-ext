@@ -1,11 +1,36 @@
 import jsQR from 'jsqr';
 
+// Chrome's native Shape Detection API (macOS Vision / ChromeOS / Android). Not in TS's DOM lib yet.
+interface BarcodeDetectorLike {
+  detect(image: ImageBitmapSource): Promise<{ rawValue: string }[]>;
+}
+declare const BarcodeDetector:
+  | {
+      new (options: { formats: string[] }): BarcodeDetectorLike;
+      getSupportedFormats(): Promise<string[]>;
+    }
+  | undefined;
+
+async function detectNative(bitmap: ImageBitmap): Promise<string | null> {
+  if (typeof BarcodeDetector === 'undefined') return null;
+  try {
+    if (!(await BarcodeDetector.getSupportedFormats()).includes('qr_code')) return null;
+    const found = await new BarcodeDetector({ formats: ['qr_code'] }).detect(bitmap);
+    return found[0]?.rawValue ?? null;
+  } catch {
+    return null;
+  }
+}
+
 /** Decode the first QR code in an image (File, Blob or data URL). Returns null if none found. */
 export async function decodeQrFromImage(source: Blob | string): Promise<string | null> {
   const blob = typeof source === 'string' ? await dataUrlToBlob(source) : source;
   const bitmap = await createImageBitmap(blob);
   try {
-    // Try full size first, then downscaled: jsQR struggles with huge phone photos.
+    // The native detector handles dense Authenticator export QRs that jsQR often can't.
+    const native = await detectNative(bitmap);
+    if (native) return native;
+    // Fallback: jsQR at full size, then downscaled (it struggles with huge phone photos).
     for (const scale of [1, 0.5, 0.25]) {
       const result = decodeBitmap(bitmap, scale);
       if (result) return result;
